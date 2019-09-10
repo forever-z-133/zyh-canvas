@@ -1,0 +1,16 @@
+{
+  "name": "zyh-dom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "rollup --config -w",
+    "build": "rollup --config"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "rollup": "^1.21.2",
+    "rollup-plugin-json": "^4.0.0"
+  }
+}

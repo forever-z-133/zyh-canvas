@@ -1,2 +1,1 @@
-# zyh-canvas
-又开始搞 html 转 canvas 这玩意了
+又开始搞 HTML 转 canvas 这玩意了...
