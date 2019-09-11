@@ -2,13 +2,18 @@
  * 样式计算中心
  */
 export default class StyleConvert {
-  convert(style) {
+  convert(style, dom) {
     const newStyle = this;
     for (const attr in newStyle) {
       const newValue = newStyle[attr];
+      const oldValue = style[attr];
       delete newStyle[attr];
       if (attr === 'padding') {
         this.addPrefix(style, 'padding', this.one2four(newValue));
+      } if (attr === 'left') {
+        newValue = parseFloat(newValue);
+        oldValue = parseFloat(oldValue);
+        dom.x += newValue - oldValue;
       } else {
         style[attr] = newValue;
       }

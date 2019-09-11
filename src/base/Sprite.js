@@ -61,6 +61,10 @@ export default class Sprite {
   addChild(el) {
     el.parent = this;
     this.child.push(el);
+    // 部分样式被子级继承
+    ['fontSize'].forEach(attr => {
+      el.style[attr] = this.style[attr];
+    });
   }
   removeChild(el) {
     this.child = this.child.filter(item => item !== el);

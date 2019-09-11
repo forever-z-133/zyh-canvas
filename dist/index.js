@@ -126,15 +126,22 @@
 
     _createClass(StyleConvert, [{
       key: "convert",
-      value: function convert(style) {
+      value: function convert(style, dom) {
         var newStyle = this;
 
         for (var attr in newStyle) {
           var newValue = newStyle[attr];
+          var oldValue = style[attr];
           delete newStyle[attr];
 
           if (attr === 'padding') {
             this.addPrefix(style, 'padding', this.one2four(newValue));
+          }
+
+          if (attr === 'left') {
+            newValue = parseFloat(newValue);
+            oldValue = parseFloat(oldValue);
+            dom.x += newValue - oldValue;
           } else {
             style[attr] = newValue;
           }
@@ -1257,7 +1264,7 @@
     var obj = {};
 
     obj.convert = function () {
-      return sc.convert(obj);
+      return sc.convert(obj, dom);
     };
 
     obj = new Proxy(obj, {
@@ -1391,14 +1398,10 @@
         var _this = this;
 
         el.parent = this;
-        this.child.push(el);
-        var childX = this.childX,
-            childY = this.childY,
-            childWidth = this.childWidth,
-            childHeight = this.childHeight;
-        this.child.forEach(function (item) {
-          _this.childX = Math.min(childX, item.x);
-          _this.childY = Math.min(childY, item.y);
+        this.child.push(el); // 部分样式被子级继承
+
+        ['fontSize'].forEach(function (attr) {
+          el.style[attr] = _this.style[attr];
         });
       }
     }, {
@@ -1489,6 +1492,39 @@
     return TextNode;
   }(Sprite);
 
+  var InlineBox =
+  /*#__PURE__*/
+  function (_Sprite) {
+    _inherits(InlineBox, _Sprite);
+
+    function InlineBox(style) {
+      _classCallCheck(this, InlineBox);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(InlineBox).call(this, style));
+    }
+
+    _createClass(InlineBox, [{
+      key: "init",
+      value: function init(ctx) {
+        this.x = this.parent ? this.parent.x : 0;
+        this.y = this.parent ? this.parent.y : 0;
+        var width = 0,
+            height = 0;
+        this.child.forEach(function (el) {
+          width += el.width;
+          height += el.height;
+        });
+        this.width = width;
+        this.height = height;
+      }
+    }, {
+      key: "customDraw",
+      value: function customDraw(ctx) {}
+    }]);
+
+    return InlineBox;
+  }(Sprite);
+
   var Index =
   /*#__PURE__*/
   function (_BlockBox) {
@@ -1501,18 +1537,21 @@
 
       _this = _possibleConstructorReturn(this, _getPrototypeOf(Index).call(this, style));
       _this.style.backgroundColor = 'pink';
-      var text = new TextNode('哈哈哈', {
+      var inline = new InlineBox({
         fontSize: '50px',
         backgroundColor: 'red'
       });
+      inline.addChild(new TextNode('xx'));
 
-      _this.addChild(text);
+      _this.addChild(inline); // this.addChild(new TextNode('120px', {
+      //   color: 'white',
+      //   borderWidth: '5px'
+      // }));
 
-      _this.addChild(new TextNode('120px', {
-        color: 'white',
-        borderWidth: '1px'
-      }));
 
+      setInterval(function () {
+        inline.x = parseFloat(inline.x) + 1;
+      }, 50);
       return _this;
     }
 
@@ -1537,6 +1576,20 @@
   /**
    * 页面初始入口
    */
+
+  window.test = function (length) {
+    if (!this.xxx || this.xxx < length) {
+      var _console;
+
+      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+
+      (_console = console).log.apply(_console, args);
+
+      this.xxx = ++this.xxx || 1;
+    }
+  };
 
   var canvas = document.createElement('canvas');
   var winW = canvas.width = 750;
