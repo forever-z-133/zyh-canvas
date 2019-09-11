@@ -3,41 +3,214 @@
   factory();
 }(function () { 'use strict';
 
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    return Constructor;
+  }
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function");
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) _setPrototypeOf(subClass, superClass);
+  }
+
+  function _getPrototypeOf(o) {
+    _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+      return o.__proto__ || Object.getPrototypeOf(o);
+    };
+    return _getPrototypeOf(o);
+  }
+
+  function _setPrototypeOf(o, p) {
+    _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+      o.__proto__ = p;
+      return o;
+    };
+
+    return _setPrototypeOf(o, p);
+  }
+
+  function _assertThisInitialized(self) {
+    if (self === void 0) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return self;
+  }
+
+  function _possibleConstructorReturn(self, call) {
+    if (call && (typeof call === "object" || typeof call === "function")) {
+      return call;
+    }
+
+    return _assertThisInitialized(self);
+  }
+
+  function _slicedToArray(arr, i) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+  }
+
+  function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
+  }
+
+  function _iterableToArrayLimit(arr, i) {
+    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+      return;
+    }
+
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+
+    try {
+      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"] != null) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+  }
+
   /**
    * 样式计算中心
    */
-  class StyleConvert {
-    convert(style) {
-      const newStyle = this;
-      for (const attr in newStyle) {
-        const newValue = newStyle[attr];
-        delete newStyle[attr];
-        if (attr === 'padding') {
-          this.addPrefix(style, 'padding', this.one2four(newValue));
-        } else {
-          style[attr] = newValue;
+  var StyleConvert =
+  /*#__PURE__*/
+  function () {
+    function StyleConvert() {
+      _classCallCheck(this, StyleConvert);
+    }
+
+    _createClass(StyleConvert, [{
+      key: "convert",
+      value: function convert(style) {
+        var newStyle = this;
+
+        for (var attr in newStyle) {
+          var newValue = newStyle[attr];
+          delete newStyle[attr];
+
+          if (attr === 'padding') {
+            this.addPrefix(style, 'padding', this.one2four(newValue));
+          } else {
+            style[attr] = newValue;
+          }
+        }
+      } // 诸如 padding 转为 t/r/b/l 四个值
+
+    }, {
+      key: "one2four",
+      value: function one2four(str) {
+        var temp = str.split(' ');
+        var top, right, bottom, left;
+
+        if (temp.length === 1) {
+          var _temp = _slicedToArray(temp, 4);
+
+          top = _temp[0];
+          var _temp$ = _temp[1];
+          right = _temp$ === void 0 ? top : _temp$;
+          var _temp$2 = _temp[2];
+          bottom = _temp$2 === void 0 ? top : _temp$2;
+          var _temp$3 = _temp[3];
+          left = _temp$3 === void 0 ? top : _temp$3;
+        }
+
+        if (temp.length === 2) {
+          var _temp2 = _slicedToArray(temp, 4);
+
+          top = _temp2[0];
+          right = _temp2[1];
+          var _temp2$ = _temp2[2];
+          bottom = _temp2$ === void 0 ? top : _temp2$;
+          var _temp2$2 = _temp2[3];
+          left = _temp2$2 === void 0 ? right : _temp2$2;
+        }
+
+        if (temp.length === 3) {
+          var _temp3 = _slicedToArray(temp, 4);
+
+          top = _temp3[0];
+          right = _temp3[1];
+          bottom = _temp3[2];
+          var _temp3$ = _temp3[3];
+          left = _temp3$ === void 0 ? right : _temp3$;
+        }
+
+        if (temp.length === 4) {
+          var _temp4 = _slicedToArray(temp, 4);
+
+          top = _temp4[0];
+          right = _temp4[1];
+          bottom = _temp4[2];
+          left = _temp4[3];
+        }
+
+        return {
+          top: top,
+          right: right,
+          bottom: bottom,
+          left: left
+        };
+      } // 将 left 改为 paddingLeft 之类的
+
+    }, {
+      key: "addPrefix",
+      value: function addPrefix(style, pre, data) {
+        if (!pre || !data) throw new Error('缺少相应入参');
+
+        for (var attr in data) {
+          var newAttr = pre + attr.toFirstUpperCase();
+          style[newAttr] = data[attr];
         }
       }
-    }
-    // 诸如 padding 转为 t/r/b/l 四个值
-    one2four(str) {
-      const temp = str.split(' ');
-      let top, right, bottom, left;
-      if (temp.length === 1) [top, right = top, bottom = top, left = top] = temp;
-      if (temp.length === 2) [top, right, bottom = top, left = right] = temp;
-      if (temp.length === 3) [top, right, bottom, left = right] = temp;
-      if (temp.length === 4) [top, right, bottom, left] = temp;
-      return { top, right, bottom, left };
-    }
-    // 将 left 改为 paddingLeft 之类的
-    addPrefix(style, pre, data) {
-      if (!pre || !data) throw new Error('缺少相应入参');
-      for (const attr in data) {
-        const newAttr = pre + attr.toFirstUpperCase();
-        style[newAttr] = data[attr];
-      }
-    }
-  }
+    }]);
+
+    return StyleConvert;
+  }();
 
   var alignContent = "normal";
   var alignItems = "normal";
@@ -1080,16 +1253,20 @@
    * 样式构造期
    */
   function CSSStyleDeclaration(dom) {
-    const sc = new StyleConvert();
-    let obj = {};
-    obj.convert = () => sc.convert(obj);
+    var sc = new StyleConvert();
+    var obj = {};
+
+    obj.convert = function () {
+      return sc.convert(obj);
+    };
+
     obj = new Proxy(obj, {
-      set: function (target, key, value, receiver) {
+      set: function set(target, key, value, receiver) {
         sc[key] = value;
         target[key] = value;
         return receiver;
       },
-      get: function(target, key) {
+      get: function get(target, key) {
         if (key in target) return target[key];
         return defaultStyle[key];
       }
@@ -1101,14 +1278,19 @@
    * 样式绘制中心
    */
   function StyleRender(ctx, style, dom) {
-    const { x, y, width, height } = dom;
-    ctx.rect(x, y, width, height);
-    // 背景
+    var x = dom.x,
+        y = dom.y,
+        width = dom.width,
+        height = dom.height;
+    ctx.rect(x, y, width, height); // 背景
+
     ctx.fillStyle = style.backgroundColor;
-    ctx.fill();
-    // 边框
-    const borderWidth = parseFloat(style.borderWidth) || 0;
-    if (borderWidth) { // lineWidth 设 0 也还是 1，所以只能这么搞了
+    ctx.fill(); // 边框
+
+    var borderWidth = parseFloat(style.borderWidth) || 0;
+
+    if (borderWidth) {
+      // lineWidth 设 0 也还是 1，所以只能这么搞了
       ctx.strokeStyle = style.borderColor;
       ctx.lineWidth = borderWidth;
       ctx.stroke();
@@ -1118,179 +1300,251 @@
   /**
    * 公共方法
    */
-
-  const app = {
-    data: {},
+  var app = {
+    data: {}
   };
-  String.prototype.toFirstUpperCase = function() {
+
+  String.prototype.toFirstUpperCase = function () {
     return this.slice(0, 1).toUpperCase() + this.slice(1).toLowerCase();
   };
-  const getFontSize = (ctx) => {
+  var getFontSize = function getFontSize(ctx) {
     return parseFloat(ctx.font.split(' ')[0]);
   };
-  const getTextWidth = (ctx, text) => {
+  var getTextWidth = function getTextWidth(ctx, text) {
     return ctx.measureText(text).width;
   };
-  const useTempCanvas = (() => {
-    const canvas = document.createElement('canvas');
-    return function(raw_ctx, func) {
-      const w = canvas.width = raw_ctx.canvas.width;
-      const h = canvas.height = raw_ctx.canvas.height;
-      const ctx = canvas.getContext('2d');
+  var useTempCanvas = function () {
+    var canvas = document.createElement('canvas');
+    return function (raw_ctx, func) {
+      var w = canvas.width = raw_ctx.canvas.width;
+      var h = canvas.height = raw_ctx.canvas.height;
+      var ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, w, h);
       func && func(ctx, raw_ctx);
       raw_ctx.drawImage(canvas, 0, 0, w, h);
-    }
-  })();
+    };
+  }();
 
-  /**
-   * 所有元素节点的基础
-   */
-  let domId = 0;
-  class Sprite {
-    constructor(style) {
+  var domId = 0;
+
+  var Sprite =
+  /*#__PURE__*/
+  function () {
+    function Sprite(style) {
+      _classCallCheck(this, Sprite);
+
       this.domId = ++domId;
       this.style = new CSSStyleDeclaration(this);
-      
-      for (const attr in style) {
+
+      for (var attr in style) {
         this.style[attr] = style[attr];
       }
 
       this.inited = false;
-
       this.x = 0;
       this.y = 0;
       this.width = 0;
       this.height = 0;
-
+      this.childX = 0;
+      this.childY = 0;
+      this.childWidth = 0;
+      this.childHeight = 0;
       this.child = [];
       this.parent = void 0;
     }
-    draw(ctx) {
-      // 绘制本节点
-      useTempCanvas(ctx, this._draw.bind(this));
 
-      // 绘制子节点
-      if (this.child.length) {
-        this.child.forEach(el => el.draw(ctx));
+    _createClass(Sprite, [{
+      key: "draw",
+      value: function draw(ctx) {
+        // 绘制本节点
+        useTempCanvas(ctx, this._draw.bind(this)); // 绘制子节点
+
+        if (this.child.length) {
+          this.child.forEach(function (el) {
+            return el.draw(ctx);
+          });
+        }
       }
-    }
-    _draw(ctx) {
-      if (!this.inited) {
-        this.inited = true;
-        this.child.forEach(el => {
-          el.init && el.init(ctx);
+    }, {
+      key: "_draw",
+      value: function _draw(ctx) {
+        if (!this.inited) {
+          this.inited = true;
+          this.child.forEach(function (el) {
+            el.init && el.init(ctx);
+          });
+          this.init && this.init(ctx);
+        } // 将 padding 转为 paddingLeft 等
+
+
+        this.style.convert(this); // 各式公共样式的处理，如背景/边框等
+
+        StyleRender(ctx, this.style, this); // 各节点特有的绘制方案
+
+        if (this.customDraw) {
+          this.customDraw(ctx);
+        }
+      }
+    }, {
+      key: "addChild",
+      value: function addChild(el) {
+        var _this = this;
+
+        el.parent = this;
+        this.child.push(el);
+        var childX = this.childX,
+            childY = this.childY,
+            childWidth = this.childWidth,
+            childHeight = this.childHeight;
+        this.child.forEach(function (item) {
+          _this.childX = Math.min(childX, item.x);
+          _this.childY = Math.min(childY, item.y);
         });
-        this.init && this.init(ctx);
       }
-
-      // 将 padding 转为 paddingLeft 等
-      this.style.convert(this);
-      
-      // 各式公共样式的处理，如背景/边框等
-      StyleRender(ctx, this.style, this);
-
-      // 各节点特有的绘制方案
-      if (this.customDraw) {
-        this.customDraw(ctx);
+    }, {
+      key: "removeChild",
+      value: function removeChild(el) {
+        this.child = this.child.filter(function (item) {
+          return item !== el;
+        });
       }
-    }
-    addChild(el) {
-      el.parent = this;
-      this.child.push(el);
-    }
-    removeChild(el) {
-      this.child = this.child.filter(item => item !== el);
-    }
-  }
+    }]);
 
-  /**
-   * 块级盒子
-   */
-  class BlockBox extends Sprite {
-    constructor(style) {
-      super(style);
-    }
-    init() {
-      this.x = this.parent ? this.parent.x : 0;
-      this.y = this.parent ? this.parent.y : 0;
-      const _height = this.child.reduce((re, el) => re + el.height, 0);
-      this.width = parseFloat(this.style.width) || app.data.winW;
-      this.height = parseFloat(this.style.height) || _height;
-    }
-  }
+    return Sprite;
+  }();
 
-  class TextNode extends Sprite {
-    constructor(text, style) {
-      super(style);
-      this.text = text;
-    }
-    init(ctx) {
-      const { fontSize, fontFamily } = this.style;
-      ctx.font = `${fontSize} ${fontFamily}`;
-      this.width = getTextWidth(ctx, this.text);
-      this.height = getFontSize(ctx);
-      this.x = this.parent ? this.parent.x : 0;
-      this.y = this.parent ? this.parent.y : 0;
-    }
-    customDraw(ctx) {
-      const { text, x, y } = this;
-      const { color, fontSize, fontFamily } = this.style;
-      ctx.font = `${fontSize} ${fontFamily}`;
-      ctx.fillStyle = color;
-      ctx.textBaseline = 'top';
-      ctx.fillText(text, x, y);
-    }
-  }
+  var BlockBox =
+  /*#__PURE__*/
+  function (_Sprite) {
+    _inherits(BlockBox, _Sprite);
 
-  /**
-   * 首页
-   */
-  class Index extends BlockBox {
-    constructor(style) {
-      super(style);
-      this.style.backgroundColor = 'pink';
-      const text = new TextNode('哈哈哈', {
+    function BlockBox(style) {
+      _classCallCheck(this, BlockBox);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(BlockBox).call(this, style));
+    }
+
+    _createClass(BlockBox, [{
+      key: "init",
+      value: function init() {
+        this.x = this.parent ? this.parent.x : 0;
+        this.y = this.parent ? this.parent.y : 0;
+
+        var _height = this.child.reduce(function (re, el) {
+          return re + el.height;
+        }, 0);
+
+        this.width = parseFloat(this.style.width) || app.data.winW;
+        this.height = parseFloat(this.style.height) || _height;
+      }
+    }]);
+
+    return BlockBox;
+  }(Sprite);
+
+  var TextNode =
+  /*#__PURE__*/
+  function (_Sprite) {
+    _inherits(TextNode, _Sprite);
+
+    function TextNode(text, style) {
+      var _this;
+
+      _classCallCheck(this, TextNode);
+
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(TextNode).call(this, style));
+      _this.text = text;
+      return _this;
+    }
+
+    _createClass(TextNode, [{
+      key: "init",
+      value: function init(ctx) {
+        var _this$style = this.style,
+            fontSize = _this$style.fontSize,
+            fontFamily = _this$style.fontFamily;
+        ctx.font = "".concat(fontSize, " ").concat(fontFamily);
+        this.width = getTextWidth(ctx, this.text);
+        this.height = getFontSize(ctx);
+        this.x = this.parent ? this.parent.x : 0;
+        this.y = this.parent ? this.parent.y : 0;
+      }
+    }, {
+      key: "customDraw",
+      value: function customDraw(ctx) {
+        var text = this.text,
+            x = this.x,
+            y = this.y;
+        var _this$style2 = this.style,
+            color = _this$style2.color,
+            fontSize = _this$style2.fontSize,
+            fontFamily = _this$style2.fontFamily;
+        ctx.font = "".concat(fontSize, " ").concat(fontFamily);
+        ctx.fillStyle = color;
+        ctx.textBaseline = 'top';
+        ctx.fillText(text, x, y);
+      }
+    }]);
+
+    return TextNode;
+  }(Sprite);
+
+  var Index =
+  /*#__PURE__*/
+  function (_BlockBox) {
+    _inherits(Index, _BlockBox);
+
+    function Index(style) {
+      var _this;
+
+      _classCallCheck(this, Index);
+
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(Index).call(this, style));
+      _this.style.backgroundColor = 'pink';
+      var text = new TextNode('哈哈哈', {
         fontSize: '50px',
-        backgroundColor: 'red',
+        backgroundColor: 'red'
       });
-      this.addChild(text);
-      this.addChild(new TextNode('120px', {
+
+      _this.addChild(text);
+
+      _this.addChild(new TextNode('120px', {
         color: 'white',
         borderWidth: '1px'
       }));
-    }
-  }
 
-  /**
-   * 绘制插件初始入口
-   */
-
-  class Main {
-    constructor(canvas, ctx, width, height) {
-      const MainPage = new Index({ width, height });
-      
-      (function loop() {
-        ctx.clearRect(0, 0, width, height);
-        MainPage.draw(ctx);
-        requestAnimationFrame(loop);
-      })();
+      return _this;
     }
-  }
+
+    return Index;
+  }(BlockBox);
+
+  var Main = function Main(canvas, ctx, width, height) {
+    _classCallCheck(this, Main);
+
+    var MainPage = new Index({
+      width: width,
+      height: height
+    });
+
+    (function loop() {
+      ctx.clearRect(0, 0, width, height);
+      MainPage.draw(ctx);
+      requestAnimationFrame(loop);
+    })();
+  };
 
   /**
    * 页面初始入口
    */
 
-  const canvas = document.createElement('canvas');
-  const winW = canvas.width = 750;
-  const winH = canvas.height = 1334;
-  const ctx = canvas.getContext('2d');
+  var canvas = document.createElement('canvas');
+  var winW = canvas.width = 750;
+  var winH = canvas.height = 1334;
+  var ctx = canvas.getContext('2d');
   document.body.append(canvas);
-
   app.data.winW = winW;
   app.data.winH = winH;
-
   new Main(canvas, ctx, winW, winH);
 
 }));

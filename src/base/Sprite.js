@@ -21,6 +21,11 @@ export default class Sprite {
     this.width = 0;
     this.height = 0;
 
+    this.childX = 0;
+    this.childY = 0;
+    this.childWidth = 0;
+    this.childHeight = 0;
+
     this.child = [];
     this.parent = void 0;
   }
