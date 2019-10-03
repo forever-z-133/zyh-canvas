@@ -126,25 +126,39 @@
 
     _createClass(StyleConvert, [{
       key: "convert",
-      value: function convert(style, dom) {
+      value: function convert(oldStyle, dom) {
+        var _this = this;
+
         var newStyle = this;
 
-        for (var attr in newStyle) {
+        var _loop = function _loop(attr) {
           var newValue = newStyle[attr];
-          var oldValue = style[attr];
+          var oldValue = oldStyle[attr];
           delete newStyle[attr];
 
           if (attr === 'padding') {
-            this.addPrefix(style, 'padding', this.one2four(newValue));
+            _this.addPrefix(oldStyle, 'padding', _this.one2four(newValue));
           }
 
           if (attr === 'left') {
             newValue = parseFloat(newValue);
             oldValue = parseFloat(oldValue);
             dom.x += newValue - oldValue;
+            dom.child.forEach(function (el) {
+              el.x += newValue - oldValue;
+            });
           } else {
-            style[attr] = newValue;
+            oldStyle[attr] = newValue;
+            dom.child.forEach(function (el) {// el['x'] = newValue;
+            });
           }
+
+          window.test(20, dom.x, attr, newStyle, oldStyle);
+          delete newStyle[attr];
+        };
+
+        for (var attr in newStyle) {
+          _loop(attr);
         }
       } // 诸如 padding 转为 t/r/b/l 四个值
 
@@ -1269,8 +1283,12 @@
 
     obj = new Proxy(obj, {
       set: function set(target, key, value, receiver) {
-        sc[key] = value;
-        target[key] = value;
+        sc[key] = value; // 外显结果，比如给予 padding，但其实并未处理
+
+        if (value != target[key]) {
+          target[key] = value; // 临时赋值，在下个渲染周期进行处理，比如给的 target.padding='0' 会转为 sc.padding='0px 0px 0px 0px'
+        }
+
         return receiver;
       },
       get: function get(target, key) {
@@ -1307,19 +1325,11 @@
   /**
    * 公共方法
    */
-  var app = {
-    data: {}
-  };
 
   String.prototype.toFirstUpperCase = function () {
     return this.slice(0, 1).toUpperCase() + this.slice(1).toLowerCase();
-  };
-  var getFontSize = function getFontSize(ctx) {
-    return parseFloat(ctx.font.split(' ')[0]);
-  };
-  var getTextWidth = function getTextWidth(ctx, text) {
-    return ctx.measureText(text).width;
-  };
+  }; // 数组是否为空
+
   var useTempCanvas = function () {
     var canvas = document.createElement('canvas');
     return function (raw_ctx, func) {
@@ -1342,25 +1352,38 @@
 
       this.domId = ++domId;
       this.style = new CSSStyleDeclaration(this);
-
-      for (var attr in style) {
-        this.style[attr] = style[attr];
-      }
-
       this.inited = false;
       this.x = 0;
       this.y = 0;
       this.width = 0;
       this.height = 0;
-      this.childX = 0;
-      this.childY = 0;
-      this.childWidth = 0;
-      this.childHeight = 0;
       this.child = [];
       this.parent = void 0;
+
+      for (var attr in style) {
+        this.style[attr] = style[attr];
+      }
     }
 
     _createClass(Sprite, [{
+      key: "init",
+      value: function init() {
+        this.x = this.parent ? this.parent.x : 0;
+        this.y = this.parent ? this.parent.y : 0;
+
+        var _this$child$reduce = this.child.reduce(function (re, el) {
+          re[0] += el.width;
+          re[1] += el.height;
+          return re;
+        }, [0, 0]),
+            _this$child$reduce2 = _slicedToArray(_this$child$reduce, 2),
+            width = _this$child$reduce2[0],
+            height = _this$child$reduce2[1];
+
+        this.width = this.style.width || width;
+        this.height = this.style.height || height;
+      }
+    }, {
       key: "draw",
       value: function draw(ctx) {
         // 绘制本节点
@@ -1400,7 +1423,7 @@
         el.parent = this;
         this.child.push(el); // 部分样式被子级继承
 
-        ['fontSize'].forEach(function (attr) {
+        ['fontSize', 'textAlign'].forEach(function (attr) {
           el.style[attr] = _this.style[attr];
         });
       }
@@ -1427,69 +1450,7 @@
       return _possibleConstructorReturn(this, _getPrototypeOf(BlockBox).call(this, style));
     }
 
-    _createClass(BlockBox, [{
-      key: "init",
-      value: function init() {
-        this.x = this.parent ? this.parent.x : 0;
-        this.y = this.parent ? this.parent.y : 0;
-
-        var _height = this.child.reduce(function (re, el) {
-          return re + el.height;
-        }, 0);
-
-        this.width = parseFloat(this.style.width) || app.data.winW;
-        this.height = parseFloat(this.style.height) || _height;
-      }
-    }]);
-
     return BlockBox;
-  }(Sprite);
-
-  var TextNode =
-  /*#__PURE__*/
-  function (_Sprite) {
-    _inherits(TextNode, _Sprite);
-
-    function TextNode(text, style) {
-      var _this;
-
-      _classCallCheck(this, TextNode);
-
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(TextNode).call(this, style));
-      _this.text = text;
-      return _this;
-    }
-
-    _createClass(TextNode, [{
-      key: "init",
-      value: function init(ctx) {
-        var _this$style = this.style,
-            fontSize = _this$style.fontSize,
-            fontFamily = _this$style.fontFamily;
-        ctx.font = "".concat(fontSize, " ").concat(fontFamily);
-        this.width = getTextWidth(ctx, this.text);
-        this.height = getFontSize(ctx);
-        this.x = this.parent ? this.parent.x : 0;
-        this.y = this.parent ? this.parent.y : 0;
-      }
-    }, {
-      key: "customDraw",
-      value: function customDraw(ctx) {
-        var text = this.text,
-            x = this.x,
-            y = this.y;
-        var _this$style2 = this.style,
-            color = _this$style2.color,
-            fontSize = _this$style2.fontSize,
-            fontFamily = _this$style2.fontFamily;
-        ctx.font = "".concat(fontSize, " ").concat(fontFamily);
-        ctx.fillStyle = color;
-        ctx.textBaseline = 'top';
-        ctx.fillText(text, x, y);
-      }
-    }]);
-
-    return TextNode;
   }(Sprite);
 
   var InlineBox =
@@ -1504,20 +1465,6 @@
     }
 
     _createClass(InlineBox, [{
-      key: "init",
-      value: function init(ctx) {
-        this.x = this.parent ? this.parent.x : 0;
-        this.y = this.parent ? this.parent.y : 0;
-        var width = 0,
-            height = 0;
-        this.child.forEach(function (el) {
-          width += el.width;
-          height += el.height;
-        });
-        this.width = width;
-        this.height = height;
-      }
-    }, {
       key: "customDraw",
       value: function customDraw(ctx) {}
     }]);
@@ -1540,18 +1487,20 @@
       var inline = new InlineBox({
         fontSize: '50px',
         backgroundColor: 'red'
-      });
-      inline.addChild(new TextNode('xx'));
+      }); // inline.addChild(new TextNode('xx'));
 
       _this.addChild(inline); // this.addChild(new TextNode('120px', {
       //   color: 'white',
       //   borderWidth: '5px'
       // }));
+      // let direction = 10;
+      // setInterval(() => {
+      //   var x = parseFloat(inline.left) + direction;
+      //   if (x >= winW - inline.width || x <= 0) direction = -direction;
+      //   inline.left = x;
+      // }, 50);
 
 
-      setInterval(function () {
-        inline.x = parseFloat(inline.x) + 1;
-      }, 50);
       return _this;
     }
 
@@ -1596,8 +1545,6 @@
   var winH = canvas.height = 1334;
   var ctx = canvas.getContext('2d');
   document.body.append(canvas);
-  app.data.winW = winW;
-  app.data.winH = winH;
   new Main(canvas, ctx, winW, winH);
 
 }));

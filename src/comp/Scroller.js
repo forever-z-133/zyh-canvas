@@ -6,8 +6,6 @@ export default class Scroller extends BlockBox {
   constructor() {
     super();
   }
-  init(ctx) {
-  }
   customDraw(ctx) {
   }
 }

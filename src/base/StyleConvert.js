@@ -2,21 +2,29 @@
  * 样式计算中心
  */
 export default class StyleConvert {
-  convert(style, dom) {
+  convert(oldStyle, dom) {
     const newStyle = this;
     for (const attr in newStyle) {
       const newValue = newStyle[attr];
-      const oldValue = style[attr];
+      const oldValue = oldStyle[attr];
       delete newStyle[attr];
       if (attr === 'padding') {
-        this.addPrefix(style, 'padding', this.one2four(newValue));
+        this.addPrefix(oldStyle, 'padding', this.one2four(newValue));
       } if (attr === 'left') {
         newValue = parseFloat(newValue);
         oldValue = parseFloat(oldValue);
         dom.x += newValue - oldValue;
+        dom.child.forEach(el => {
+          el.x += newValue - oldValue;
+        });
       } else {
-        style[attr] = newValue;
+        oldStyle[attr] = newValue;
+        dom.child.forEach(el => {
+          // el['x'] = newValue;
+        });
       }
+      window.test(20, dom.x, attr, newStyle, oldStyle);
+      delete newStyle[attr];
     }
   }
   // 诸如 padding 转为 t/r/b/l 四个值

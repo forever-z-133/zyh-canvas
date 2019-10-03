@@ -2,22 +2,33 @@
  * 公共方法
  */
 
+ // 全局变量
 export const app = {
   data: {},
 };
+
+// 首字母大写
 String.prototype.toFirstUpperCase = function() {
   return this.slice(0, 1).toUpperCase() + this.slice(1).toLowerCase();
 }
+
+// 数组是否为空
 export const isEmpty = (obj) => {
-  for (var i in obj) return false;
-  return true;
+  if (obj == void 0 || isNaN(obj)) return true;
+  return Object.keys(obj).length < 1;
 }
+
+// 获取 canvas 字体大小
 export const getFontSize = (ctx) => {
   return parseFloat(ctx.font.split(' ')[0]);
 }
+
+// 获取文本宽度
 export const getTextWidth = (ctx, text) => {
   return ctx.measureText(text).width;
 }
+
+// 使用临时 canvas 绘制
 export const useTempCanvas = (() => {
   const canvas = document.createElement('canvas');
   return function(raw_ctx, func) {

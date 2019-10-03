@@ -9,10 +9,6 @@ export default class Sprite {
   constructor(style) {
     this.domId = ++domId;
     this.style = new CSSStyleDeclaration(this);
-    
-    for (const attr in style) {
-      this.style[attr] = style[attr];
-    }
 
     this.inited = false;
 
@@ -21,13 +17,21 @@ export default class Sprite {
     this.width = 0;
     this.height = 0;
 
-    this.childX = 0;
-    this.childY = 0;
-    this.childWidth = 0;
-    this.childHeight = 0;
-
     this.child = [];
     this.parent = void 0;
+    
+    for (const attr in style) {
+      this.style[attr] = style[attr];
+    }
+  }
+  init() {
+    this.x = this.parent ? this.parent.x : 0;
+    this.y = this.parent ? this.parent.y : 0;
+    const [ width, height ] = this.child.reduce((re, el) => {
+      re[0] += el.width; re[1] += el.height; return re;
+    }, [0, 0]);
+    this.width = this.style.width || width;
+    this.height = this.style.height || height;
   }
   draw(ctx) {
     // 绘制本节点
@@ -62,7 +66,7 @@ export default class Sprite {
     el.parent = this;
     this.child.push(el);
     // 部分样式被子级继承
-    ['fontSize'].forEach(attr => {
+    ['fontSize', 'textAlign'].forEach(attr => {
       el.style[attr] = this.style[attr];
     });
   }
