@@ -1,24 +1,16 @@
-import Main from './main';
-import { app } from './libs/utils';
-
 /**
- * 页面初始入口
+ * 绘制插件初始入口
  */
+import Index from './pages/index/index';
 
-window.test = function(length, ...args) {
-  if (!this.xxx || this.xxx < length) {
-    console.log(...args);
-    this.xxx = ++this.xxx || 1;
+export default class Main {
+  constructor(canvas, ctx, width, height) {
+    const MainPage = new Index({ width, height });
+    
+    (function loop() {
+      ctx.clearRect(0, 0, width, height);
+      MainPage.render(ctx);
+      requestAnimationFrame(loop);
+    })();
   }
 }
-
-const canvas = document.createElement('canvas');
-const winW = canvas.width = 750;
-const winH = canvas.height = 1334;
-const ctx = canvas.getContext('2d');
-document.body.append(canvas);
-
-app.data.winW = winW;
-app.data.winH = winH;
-
-new Main(canvas, ctx, winW, winH);

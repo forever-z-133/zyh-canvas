@@ -6,6 +6,4 @@ export default class InlineBox extends Sprite {
   constructor(style) {
     super(style);
   }
-  customDraw(ctx) {
-  }
 }

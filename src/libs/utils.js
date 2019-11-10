@@ -1,22 +1,33 @@
-/**
- * 公共方法
- */
-
- // 全局变量
+// 全局变量
 export const app = {
   data: {},
 };
 
-// 首字母大写
-String.prototype.toFirstUpperCase = function() {
-  return this.slice(0, 1).toUpperCase() + this.slice(1).toLowerCase();
+/****************************************
+ * canvas 相关功能
+ ***************************************/
+export function createCanvas() {
+  return document.createElement('canvas');
 }
-
-// 数组是否为空
-export const isEmpty = (obj) => {
-  if (obj == void 0 || isNaN(obj)) return true;
-  return Object.keys(obj).length < 1;
+export function getContext(canvas, width, height) {
+  canvas = canvas || createCanvas();
+  canvas.width = width || 750;
+  canvas.height = height || 1334;
+  return canvas.getContext('2d');
 }
+export const useTempCanvas = (() => {
+  const canvas = createCanvas();
+  return function (raw_ctx, func) {
+    const w = raw_ctx.canvas.width;
+    const h = raw_ctx.canvas.height;
+    const ctx = getContext(canvas, w, h);
+    ctx.clearRect(0, 0, w, h);
+    ctx.save();
+    func && func(ctx, raw_ctx);
+    raw_ctx.drawImage(canvas, 0, 0, w, h);
+    ctx.restore();
+  }
+})()
 
 // 获取 canvas 字体大小
 export const getFontSize = (ctx) => {
@@ -28,15 +39,24 @@ export const getTextWidth = (ctx, text) => {
   return ctx.measureText(text).width;
 }
 
-// 使用临时 canvas 绘制
-export const useTempCanvas = (() => {
-  const canvas = document.createElement('canvas');
-  return function(raw_ctx, func) {
-    const w = canvas.width = raw_ctx.canvas.width;
-    const h = canvas.height = raw_ctx.canvas.height;
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, w, h);
-    func && func(ctx, raw_ctx);
-    raw_ctx.drawImage(canvas, 0, 0, w, h);
+/****************************************
+ * 常用方法
+ ***************************************/
+
+// 是否为空
+export const isEmpty = (obj) => {
+  if (obj === null || obj === undefined) return true;
+  return Object.keys(obj).length < 1;
+}
+
+// 返回数字
+export function returnNumber(...args) {
+  for (let value of args) {
+    value = parseFloat(value);
+    if (!isNaN(value)) return value;
   }
-})()
+}
+
+export function toFirstUpperCase() {
+  return this.slice(0, 1).toUpperCase() + this.slice(1).toLowerCase();
+}

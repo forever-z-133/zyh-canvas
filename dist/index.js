@@ -3,235 +3,91 @@
   factory();
 }(function () { 'use strict';
 
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
+  // 全局变量
+  const app = {
+    data: {},
+  };
+
+  /****************************************
+   * canvas 相关功能
+   ***************************************/
+  function createCanvas() {
+    return document.createElement('canvas');
+  }
+  function getContext(canvas, width, height) {
+    canvas = canvas || createCanvas();
+    canvas.width = width || 750;
+    canvas.height = height || 1334;
+    return canvas.getContext('2d');
+  }
+  const useTempCanvas = (() => {
+    const canvas = createCanvas();
+    return function (raw_ctx, func) {
+      const w = raw_ctx.canvas.width;
+      const h = raw_ctx.canvas.height;
+      const ctx = getContext(canvas, w, h);
+      ctx.clearRect(0, 0, w, h);
+      ctx.save();
+      func && func(ctx, raw_ctx);
+      raw_ctx.drawImage(canvas, 0, 0, w, h);
+      ctx.restore();
+    }
+  })();
+
+  // 返回数字
+  function returnNumber(...args) {
+    for (let value of args) {
+      value = parseFloat(value);
+      if (!isNaN(value)) return value;
     }
   }
 
-  function _defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  function _createClass(Constructor, protoProps, staticProps) {
-    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) _defineProperties(Constructor, staticProps);
-    return Constructor;
-  }
-
-  function _inherits(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function");
-    }
-
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) _setPrototypeOf(subClass, superClass);
-  }
-
-  function _getPrototypeOf(o) {
-    _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
-      return o.__proto__ || Object.getPrototypeOf(o);
-    };
-    return _getPrototypeOf(o);
-  }
-
-  function _setPrototypeOf(o, p) {
-    _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-      o.__proto__ = p;
-      return o;
-    };
-
-    return _setPrototypeOf(o, p);
-  }
-
-  function _assertThisInitialized(self) {
-    if (self === void 0) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return self;
-  }
-
-  function _possibleConstructorReturn(self, call) {
-    if (call && (typeof call === "object" || typeof call === "function")) {
-      return call;
-    }
-
-    return _assertThisInitialized(self);
-  }
-
-  function _slicedToArray(arr, i) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
-  }
-
-  function _arrayWithHoles(arr) {
-    if (Array.isArray(arr)) return arr;
-  }
-
-  function _iterableToArrayLimit(arr, i) {
-    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
-      return;
-    }
-
-    var _arr = [];
-    var _n = true;
-    var _d = false;
-    var _e = undefined;
-
-    try {
-      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-        _arr.push(_s.value);
-
-        if (i && _arr.length === i) break;
-      }
-    } catch (err) {
-      _d = true;
-      _e = err;
-    } finally {
-      try {
-        if (!_n && _i["return"] != null) _i["return"]();
-      } finally {
-        if (_d) throw _e;
-      }
-    }
-
-    return _arr;
-  }
-
-  function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+  function toFirstUpperCase() {
+    return this.slice(0, 1).toUpperCase() + this.slice(1).toLowerCase();
   }
 
   /**
    * 样式计算中心
+   * 即子元素与 padding 与 paddingLeft 等的转化计算过程
    */
-  var StyleConvert =
-  /*#__PURE__*/
-  function () {
-    function StyleConvert() {
-      _classCallCheck(this, StyleConvert);
-    }
-
-    _createClass(StyleConvert, [{
-      key: "convert",
-      value: function convert(oldStyle, dom) {
-        var _this = this;
-
-        var newStyle = this;
-
-        var _loop = function _loop(attr) {
-          var newValue = newStyle[attr];
-          var oldValue = oldStyle[attr];
-          delete newStyle[attr];
-
-          if (attr === 'padding') {
-            _this.addPrefix(oldStyle, 'padding', _this.one2four(newValue));
-          }
-
-          if (attr === 'left') {
-            newValue = parseFloat(newValue);
-            oldValue = parseFloat(oldValue);
-            dom.x += newValue - oldValue;
-            dom.child.forEach(function (el) {
-              el.x += newValue - oldValue;
-            });
-          } else {
-            oldStyle[attr] = newValue;
-            dom.child.forEach(function (el) {// el['x'] = newValue;
-            });
-          }
-
-          window.test(20, dom.x, attr, newStyle, oldStyle);
-          delete newStyle[attr];
-        };
-
-        for (var attr in newStyle) {
-          _loop(attr);
-        }
-      } // 诸如 padding 转为 t/r/b/l 四个值
-
-    }, {
-      key: "one2four",
-      value: function one2four(str) {
-        var temp = str.split(' ');
-        var top, right, bottom, left;
-
-        if (temp.length === 1) {
-          var _temp = _slicedToArray(temp, 4);
-
-          top = _temp[0];
-          var _temp$ = _temp[1];
-          right = _temp$ === void 0 ? top : _temp$;
-          var _temp$2 = _temp[2];
-          bottom = _temp$2 === void 0 ? top : _temp$2;
-          var _temp$3 = _temp[3];
-          left = _temp$3 === void 0 ? top : _temp$3;
-        }
-
-        if (temp.length === 2) {
-          var _temp2 = _slicedToArray(temp, 4);
-
-          top = _temp2[0];
-          right = _temp2[1];
-          var _temp2$ = _temp2[2];
-          bottom = _temp2$ === void 0 ? top : _temp2$;
-          var _temp2$2 = _temp2[3];
-          left = _temp2$2 === void 0 ? right : _temp2$2;
-        }
-
-        if (temp.length === 3) {
-          var _temp3 = _slicedToArray(temp, 4);
-
-          top = _temp3[0];
-          right = _temp3[1];
-          bottom = _temp3[2];
-          var _temp3$ = _temp3[3];
-          left = _temp3$ === void 0 ? right : _temp3$;
-        }
-
-        if (temp.length === 4) {
-          var _temp4 = _slicedToArray(temp, 4);
-
-          top = _temp4[0];
-          right = _temp4[1];
-          bottom = _temp4[2];
-          left = _temp4[3];
-        }
-
-        return {
-          top: top,
-          right: right,
-          bottom: bottom,
-          left: left
-        };
-      } // 将 left 改为 paddingLeft 之类的
-
-    }, {
-      key: "addPrefix",
-      value: function addPrefix(style, pre, data) {
-        if (!pre || !data) throw new Error('缺少相应入参');
-
-        for (var attr in data) {
-          var newAttr = pre + attr.toFirstUpperCase();
-          style[newAttr] = data[attr];
+  class StyleConvert {
+    convert(oldStyle, dom) {
+      const newStyle = this;
+      for (const attr in newStyle) {
+        let newValue = newStyle[attr];
+        let oldValue = oldStyle[attr];
+        delete newStyle[attr];
+        if (attr === 'padding') {
+          this.addPrefix(oldStyle, 'padding', this.one2four(newValue));
+        } if (attr === 'left') {
+          newValue = returnNumber(newValue);
+          oldValue = returnNumber(oldValue);
+          dom.x += newValue - oldValue;
+          window.test(10, dom.x, newValue, oldValue);
+        } else {
+          dom[attr] = newValue;
         }
       }
-    }]);
-
-    return StyleConvert;
-  }();
+    }
+    // 诸如 padding 转为 t/r/b/l 四个值
+    one2four(str) {
+      const temp = str.split(' ');
+      let top, right, bottom, left;
+      if (temp.length === 1) [top, right = top, bottom = top, left = top] = temp;
+      if (temp.length === 2) [top, right, bottom = top, left = right] = temp;
+      if (temp.length === 3) [top, right, bottom, left = right] = temp;
+      if (temp.length === 4) [top, right, bottom, left] = temp;
+      return { top, right, bottom, left };
+    }
+    // 将 left 改为 paddingLeft 之类的
+    addPrefix(style, pre, data) {
+      if (!pre || !data) throw new Error('缺少相应入参');
+      for (const attr in data) {
+        const newAttr = pre + toFirstUpperCase();
+        style[newAttr] = data[attr];
+      }
+    }
+  }
 
   var alignContent = "normal";
   var alignItems = "normal";
@@ -1272,50 +1128,41 @@
 
   /**
    * 样式构造期
+   * 即 dom.style 对象
    */
+
   function CSSStyleDeclaration(dom) {
-    var sc = new StyleConvert();
-    var obj = {};
-
-    obj.convert = function () {
-      return sc.convert(obj, dom);
-    };
-
-    obj = new Proxy(obj, {
-      set: function set(target, key, value, receiver) {
-        sc[key] = value; // 外显结果，比如给予 padding，但其实并未处理
-
+    const sc = new StyleConvert();
+    let style = {};
+    style.convert = () => sc.convert(style, dom);
+    style = new Proxy(style, {
+      set: function (target, key, value, receiver) {
+        sc[key] = value;  // 外显结果，比如给予 padding，但其实并未处理
         if (value != target[key]) {
           target[key] = value; // 临时赋值，在下个渲染周期进行处理，比如给的 target.padding='0' 会转为 sc.padding='0px 0px 0px 0px'
         }
-
         return receiver;
       },
-      get: function get(target, key) {
+      get: function(target, key) {
         if (key in target) return target[key];
         return defaultStyle[key];
       }
     });
-    return obj;
+    return style;
   }
 
   /**
    * 样式绘制中心
    */
   function StyleRender(ctx, style, dom) {
-    var x = dom.x,
-        y = dom.y,
-        width = dom.width,
-        height = dom.height;
-    ctx.rect(x, y, width, height); // 背景
-
+    const { x, y, width, height } = dom;
+    ctx.rect(x, y, width, height);
+    // 背景
     ctx.fillStyle = style.backgroundColor;
-    ctx.fill(); // 边框
-
-    var borderWidth = parseFloat(style.borderWidth) || 0;
-
-    if (borderWidth) {
-      // lineWidth 设 0 也还是 1，所以只能这么搞了
+    ctx.fill();
+    // 边框
+    const borderWidth = parseFloat(style.borderWidth) || 0;
+    if (borderWidth) { // lineWidth 设 0 也还是 1，所以只能这么搞了
       ctx.strokeStyle = style.borderColor;
       ctx.lineWidth = borderWidth;
       ctx.stroke();
@@ -1323,228 +1170,147 @@
   }
 
   /**
-   * 公共方法
+   * 所有元素节点的基础
+   * 即 dom 对象
    */
-
-  String.prototype.toFirstUpperCase = function () {
-    return this.slice(0, 1).toUpperCase() + this.slice(1).toLowerCase();
-  }; // 数组是否为空
-
-  var useTempCanvas = function () {
-    var canvas = document.createElement('canvas');
-    return function (raw_ctx, func) {
-      var w = canvas.width = raw_ctx.canvas.width;
-      var h = canvas.height = raw_ctx.canvas.height;
-      var ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, w, h);
-      func && func(ctx, raw_ctx);
-      raw_ctx.drawImage(canvas, 0, 0, w, h);
-    };
-  }();
-
-  var domId = 0;
-
-  var Sprite =
-  /*#__PURE__*/
-  function () {
-    function Sprite(style) {
-      _classCallCheck(this, Sprite);
-
+  let domId = 0;
+  class Sprite {
+    constructor(style) {
       this.domId = ++domId;
       this.style = new CSSStyleDeclaration(this);
+
       this.inited = false;
+
       this.x = 0;
       this.y = 0;
       this.width = 0;
       this.height = 0;
+
       this.child = [];
       this.parent = void 0;
-
-      for (var attr in style) {
+      
+      for (const attr in style) {
         this.style[attr] = style[attr];
       }
     }
-
-    _createClass(Sprite, [{
-      key: "init",
-      value: function init() {
-        this.x = this.parent ? this.parent.x : 0;
-        this.y = this.parent ? this.parent.y : 0;
-
-        var _this$child$reduce = this.child.reduce(function (re, el) {
-          re[0] += el.width;
-          re[1] += el.height;
-          return re;
-        }, [0, 0]),
-            _this$child$reduce2 = _slicedToArray(_this$child$reduce, 2),
-            width = _this$child$reduce2[0],
-            height = _this$child$reduce2[1];
-
-        this.width = this.style.width || width;
-        this.height = this.style.height || height;
-      }
-    }, {
-      key: "draw",
-      value: function draw(ctx) {
-        // 绘制本节点
-        useTempCanvas(ctx, this._draw.bind(this)); // 绘制子节点
-
-        if (this.child.length) {
-          this.child.forEach(function (el) {
-            return el.draw(ctx);
-          });
-        }
-      }
-    }, {
-      key: "_draw",
-      value: function _draw(ctx) {
-        if (!this.inited) {
-          this.inited = true;
-          this.child.forEach(function (el) {
-            el.init && el.init(ctx);
-          });
-          this.init && this.init(ctx);
-        } // 将 padding 转为 paddingLeft 等
-
-
-        this.style.convert(this); // 各式公共样式的处理，如背景/边框等
-
-        StyleRender(ctx, this.style, this); // 各节点特有的绘制方案
-
-        if (this.customDraw) {
-          this.customDraw(ctx);
-        }
-      }
-    }, {
-      key: "addChild",
-      value: function addChild(el) {
-        var _this = this;
-
-        el.parent = this;
-        this.child.push(el); // 部分样式被子级继承
-
-        ['fontSize', 'textAlign'].forEach(function (attr) {
-          el.style[attr] = _this.style[attr];
+    render(ctx) {
+      this._drawNode(ctx, this);
+      const { child = [] } = this;
+      child.forEach(el => el._drawNode(ctx, el));
+    }
+    _drawNode(raw_ctx, node) {
+      const { parent } = node;
+      if (!parent) {
+        // 直接绘制
+        node.draw(raw_ctx);
+      } else {
+        // 有父元素的会被裁剪
+        useTempCanvas(raw_ctx, ctx => {
+          node.draw(ctx);
+          ctx.globalCompositeOperation = 'destination-in';
+          parent.draw(ctx);
+          ctx.globalCompositeOperation = 'source-over';
         });
       }
-    }, {
-      key: "removeChild",
-      value: function removeChild(el) {
-        this.child = this.child.filter(function (item) {
-          return item !== el;
-        });
+    }
+    draw(ctx) {
+      // 将 padding 转为 paddingLeft 等
+      this.style.convert(this);
+      
+      // 各式公共样式的处理，如背景/边框等
+      StyleRender(ctx, this.style, this);
+
+      // 各节点特有的绘制方案
+      if (this.customDraw) {
+        this.customDraw(ctx);
       }
-    }]);
-
-    return Sprite;
-  }();
-
-  var BlockBox =
-  /*#__PURE__*/
-  function (_Sprite) {
-    _inherits(BlockBox, _Sprite);
-
-    function BlockBox(style) {
-      _classCallCheck(this, BlockBox);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(BlockBox).call(this, style));
     }
-
-    return BlockBox;
-  }(Sprite);
-
-  var InlineBox =
-  /*#__PURE__*/
-  function (_Sprite) {
-    _inherits(InlineBox, _Sprite);
-
-    function InlineBox(style) {
-      _classCallCheck(this, InlineBox);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(InlineBox).call(this, style));
+    appendChild(el) {
+      el.parent = this;
+      this.child.push(el);
     }
-
-    _createClass(InlineBox, [{
-      key: "customDraw",
-      value: function customDraw(ctx) {}
-    }]);
-
-    return InlineBox;
-  }(Sprite);
-
-  var Index =
-  /*#__PURE__*/
-  function (_BlockBox) {
-    _inherits(Index, _BlockBox);
-
-    function Index(style) {
-      var _this;
-
-      _classCallCheck(this, Index);
-
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(Index).call(this, style));
-      _this.style.backgroundColor = 'pink';
-      var inline = new InlineBox({
-        fontSize: '50px',
-        backgroundColor: 'red'
-      }); // inline.addChild(new TextNode('xx'));
-
-      _this.addChild(inline); // this.addChild(new TextNode('120px', {
-      //   color: 'white',
-      //   borderWidth: '5px'
-      // }));
-      // let direction = 10;
-      // setInterval(() => {
-      //   var x = parseFloat(inline.left) + direction;
-      //   if (x >= winW - inline.width || x <= 0) direction = -direction;
-      //   inline.left = x;
-      // }, 50);
-
-
-      return _this;
+    removeChild(el) {
+      this.child = this.child.filter(item => item !== el);
     }
+  }
 
-    return Index;
-  }(BlockBox);
+  /**
+   * 块级盒子
+   */
+  class BlockBox extends Sprite {
+    constructor(style) {
+      super(style);
+    }
+  }
 
-  var Main = function Main(canvas, ctx, width, height) {
-    _classCallCheck(this, Main);
+  /**
+   * 内联盒子
+   */
+  class InlineBox extends Sprite {
+    constructor(style) {
+      super(style);
+    }
+  }
 
-    var MainPage = new Index({
-      width: width,
-      height: height
-    });
+  /**
+   * 首页
+   */
 
-    (function loop() {
-      ctx.clearRect(0, 0, width, height);
-      MainPage.draw(ctx);
-      requestAnimationFrame(loop);
-    })();
+  class Index extends BlockBox {
+    constructor(style) {
+      super(style);
+
+      this.style.backgroundColor = 'pink';
+      const inline = new InlineBox({
+        width: 100,
+        height: 200,
+        left: 50,
+        backgroundColor: 'red',
+      });
+      this.appendChild(inline);
+      // for (var attr in inline.style) {
+      //   console.log(attr, inline.style[attr])
+      // }
+    }
+  }
+
+  /**
+   * 绘制插件初始入口
+   */
+
+  class Main {
+    constructor(canvas, ctx, width, height) {
+      const MainPage = new Index({ width, height });
+      
+      (function loop() {
+        ctx.clearRect(0, 0, width, height);
+        MainPage.render(ctx);
+        requestAnimationFrame(loop);
+      })();
+    }
+  }
+
+  /* 测试用 */
+  window.test = function(length, ...args) {
+    if (!this.xxx || this.xxx < length) {
+      console.log(...args);
+      this.xxx = ++this.xxx || 1;
+    }
   };
 
   /**
    * 页面初始入口
    */
 
-  window.test = function (length) {
-    if (!this.xxx || this.xxx < length) {
-      var _console;
+  app.data.winW = 750;
+  app.data.winH = 1334;
+  const winW = app.data.winW;
+  const winH = app.data.winH;
 
-      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
-      }
-
-      (_console = console).log.apply(_console, args);
-
-      this.xxx = ++this.xxx || 1;
-    }
-  };
-
-  var canvas = document.createElement('canvas');
-  var winW = canvas.width = 750;
-  var winH = canvas.height = 1334;
-  var ctx = canvas.getContext('2d');
+  const canvas = createCanvas();
+  const ctx = getContext(canvas, winW, winH);
   document.body.append(canvas);
+
   new Main(canvas, ctx, winW, winH);
 
 }));

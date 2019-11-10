@@ -1,14 +1,15 @@
 /**
  * 样式构造期
+ * 即 dom.style 对象
  */
 import StyleConvert from './StyleConvert';
 import defaultStyle from '../libs/defaultStyle.json';
 
 export default function CSSStyleDeclaration(dom) {
   const sc = new StyleConvert();
-  let obj = {};
-  obj.convert = () => sc.convert(obj, dom);
-  obj = new Proxy(obj, {
+  let style = {};
+  style.convert = () => sc.convert(style, dom);
+  style = new Proxy(style, {
     set: function (target, key, value, receiver) {
       sc[key] = value;  // 外显结果，比如给予 padding，但其实并未处理
       if (value != target[key]) {
@@ -21,5 +22,5 @@ export default function CSSStyleDeclaration(dom) {
       return defaultStyle[key];
     }
   });
-  return obj;
+  return style;
 }

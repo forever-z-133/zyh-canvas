@@ -1,5 +1,6 @@
 /**
  * 所有元素节点的基础
+ * 即 dom 对象
  */
 import CSSStyleDeclaration from './CSSStyleDeclaration';
 import StyleRender from './StyleRender';
@@ -24,33 +25,27 @@ export default class Sprite {
       this.style[attr] = style[attr];
     }
   }
-  init() {
-    this.x = this.parent ? this.parent.x : 0;
-    this.y = this.parent ? this.parent.y : 0;
-    const [ width, height ] = this.child.reduce((re, el) => {
-      re[0] += el.width; re[1] += el.height; return re;
-    }, [0, 0]);
-    this.width = this.style.width || width;
-    this.height = this.style.height || height;
+  render(ctx) {
+    this._drawNode(ctx, this);
+    const { child = [] } = this;
+    child.forEach(el => el._drawNode(ctx, el));
+  }
+  _drawNode(raw_ctx, node) {
+    const { parent } = node;
+    if (!parent) {
+      // 直接绘制
+      node.draw(raw_ctx);
+    } else {
+      // 有父元素的会被裁剪
+      useTempCanvas(raw_ctx, ctx => {
+        node.draw(ctx);
+        ctx.globalCompositeOperation = 'destination-in';
+        parent.draw(ctx);
+        ctx.globalCompositeOperation = 'source-over';
+      });
+    }
   }
   draw(ctx) {
-    // 绘制本节点
-    useTempCanvas(ctx, this._draw.bind(this));
-
-    // 绘制子节点
-    if (this.child.length) {
-      this.child.forEach(el => el.draw(ctx));
-    }
-  }
-  _draw(ctx) {
-    if (!this.inited) {
-      this.inited = true;
-      this.child.forEach(el => {
-        el.init && el.init(ctx);
-      });
-      this.init && this.init(ctx);
-    }
-
     // 将 padding 转为 paddingLeft 等
     this.style.convert(this);
     
@@ -62,13 +57,9 @@ export default class Sprite {
       this.customDraw(ctx);
     }
   }
-  addChild(el) {
+  appendChild(el) {
     el.parent = this;
     this.child.push(el);
-    // 部分样式被子级继承
-    ['fontSize', 'textAlign'].forEach(attr => {
-      el.style[attr] = this.style[attr];
-    });
   }
   removeChild(el) {
     this.child = this.child.filter(item => item !== el);

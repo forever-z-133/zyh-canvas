@@ -2,10 +2,8 @@
  * 首页
  */
 import BlockBox from '../../comp/BlockBox';
-import TextNode from '../../comp/TextNode';
 import InlineBox from '../../comp/InlineBox';
 import { app } from '../../libs/utils';
-const { data: { winW } } = app;
 
 export default class Index extends BlockBox {
   constructor(style) {
@@ -13,21 +11,14 @@ export default class Index extends BlockBox {
 
     this.style.backgroundColor = 'pink';
     const inline = new InlineBox({
-      fontSize: '50px',
+      width: 100,
+      height: 200,
+      left: 50,
       backgroundColor: 'red',
     });
-    // inline.addChild(new TextNode('xx'));
-    this.addChild(inline);
-    // this.addChild(new TextNode('120px', {
-    //   color: 'white',
-    //   borderWidth: '5px'
-    // }));
-
-    // let direction = 10;
-    // setInterval(() => {
-    //   var x = parseFloat(inline.left) + direction;
-    //   if (x >= winW - inline.width || x <= 0) direction = -direction;
-    //   inline.left = x;
-    // }, 50);
+    this.appendChild(inline);
+    // for (var attr in inline.style) {
+    //   console.log(attr, inline.style[attr])
+    // }
   }
 }

@@ -12,7 +12,7 @@ const babelConfig = isProduction ? [babel({
 
 export default {
   input: {
-    index: 'src/app.js'
+    index: 'src/index.js'
   },
   output: [{
     dir: 'dist',
