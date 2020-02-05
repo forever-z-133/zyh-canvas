@@ -1,7 +1,7 @@
 import App from './App';
-import { app } from './libs/utils';
-import { createCanvas, getContext } from './libs/utils';
-import './libs/global';
+import { app } from '@/utils';
+import { createCanvas, getContext } from '@/utils';
+import '@/utils/global';
 
 /**
  * 页面初始入口

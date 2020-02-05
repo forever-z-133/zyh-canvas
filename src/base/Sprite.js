@@ -2,33 +2,32 @@
  * 所有元素节点的基础
  * 即 dom 对象
  */
-import CSSStyleDeclaration from './CSSStyleDeclaration';
-import StyleRender from './StyleRender';
-import { useTempCanvas } from '../libs/utils';
+import CSSStyleDeclaration from '@/base/style/CSSStyleDeclaration';
+import StyleRender from '@/base/style/StyleRender';
+import { useTempCanvas } from '@/utils';
 let domId = 0;
+
 export default class Sprite {
   constructor(style) {
     this.domId = ++domId;
     this.style = new CSSStyleDeclaration(this);
-
-    this.inited = false;
 
     this.x = 0;
     this.y = 0;
     this.width = 0;
     this.height = 0;
 
-    this.child = [];
+    this.children = [];
     this.parent = void 0;
-    
+
     for (const attr in style) {
       this.style[attr] = style[attr];
     }
   }
   render(ctx) {
     this._drawNode(ctx, this);
-    const { child = [] } = this;
-    child.forEach(el => el._drawNode(ctx, el));
+    const { children = [] } = this;
+    children.forEach(el => el._drawNode(ctx, el));
   }
   _drawNode(raw_ctx, node) {
     const { parent } = node;
@@ -48,7 +47,7 @@ export default class Sprite {
   draw(ctx) {
     // 将 padding 转为 paddingLeft 等
     this.style.convert(this);
-    
+
     // 各式公共样式的处理，如背景/边框等
     StyleRender(ctx, this.style, this);
 
@@ -59,9 +58,9 @@ export default class Sprite {
   }
   appendChild(el) {
     el.parent = this;
-    this.child.push(el);
+    this.children.push(el);
   }
   removeChild(el) {
-    this.child = this.child.filter(item => item !== el);
+    this.child = this.children.filter(child => child !== el);
   }
 }

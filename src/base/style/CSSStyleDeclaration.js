@@ -3,7 +3,7 @@
  * 即 dom.style 对象
  */
 import StyleConvert from './StyleConvert';
-import defaultStyle from '../libs/defaultStyle.json';
+import defaultStyle from './defaultStyle.json';
 
 export default function CSSStyleDeclaration(dom) {
   const sc = new StyleConvert();

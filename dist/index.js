@@ -5,7 +5,7 @@
 
   // 全局变量
   const app = {
-    data: {},
+    data: {}
   };
 
   /****************************************
@@ -22,7 +22,7 @@
   }
   const useTempCanvas = (() => {
     const canvas = createCanvas();
-    return function (raw_ctx, func) {
+    return function(raw_ctx, func) {
       const w = raw_ctx.canvas.width;
       const h = raw_ctx.canvas.height;
       const ctx = getContext(canvas, w, h);
@@ -31,19 +31,42 @@
       func && func(ctx, raw_ctx);
       raw_ctx.drawImage(canvas, 0, 0, w, h);
       ctx.restore();
-    }
+    };
   })();
-
-  // 返回数字
-  function returnNumber(...args) {
-    for (let value of args) {
-      value = parseFloat(value);
-      if (!isNaN(value)) return value;
-    }
+  // 驼峰
+  function camelize(str) {
+    return str.toLowerCase().replace(/-(\w)/g, (_, s) => (s ? s.toUpperCase() : ''));
   }
 
-  function toFirstUpperCase() {
-    return this.slice(0, 1).toUpperCase() + this.slice(1).toLowerCase();
+  // 诸如 padding 转为 t/r/b/l 四个值
+  function one2four(str) {
+    const temp = str.split(' ');
+    let top, right, bottom, left;
+    if (temp.length === 1) [top, right = top, bottom = top, left = top] = temp;
+    if (temp.length === 2) [top, right, bottom = top, left = right] = temp;
+    if (temp.length === 3) [top, right, bottom, left = right] = temp;
+    if (temp.length === 4) [top, right, bottom, left] = temp;
+    return { top, right, bottom, left };
+  }
+
+  function one2three(str, pre, styles) {
+    const temp = str.split(' ');
+    let [width, style, color] = temp;
+    style = style || styles[pre + style];
+    color = color || styles[pre + color];
+    return { width, style, color };
+  }
+
+  // 将 left 改为 paddingLeft 之类的
+  // addPrefix(styles, 'padding', { left: 0 }); // { paddingLeft: 0 }
+  function addPrefix(styles, pre, data) {
+    for (const attr in data) {
+      if (pre === attr) continue;
+      const value = data[attr];
+      const newAttr = camelize(`${pre}-${attr}`);
+      styles[newAttr] = value;
+    }
+    return data;
   }
 
   /**
@@ -57,34 +80,17 @@
         let newValue = newStyle[attr];
         let oldValue = oldStyle[attr];
         delete newStyle[attr];
+        // 先拆，比如 padding 改变则 paddingLeft 改变
+        // 再合，比如 paddingLeft 改变则 padding 改变
         if (attr === 'padding') {
-          this.addPrefix(oldStyle, 'padding', this.one2four(newValue));
-        } if (attr === 'left') {
-          newValue = returnNumber(newValue);
-          oldValue = returnNumber(oldValue);
-          dom.x += newValue - oldValue;
-          window.test(10, dom.x, newValue, oldValue);
-        } else {
+          addPrefix(oldStyle, 'padding', one2four(newValue));
+        } else if (attr === 'margin') {
+          addPrefix(oldStyle, 'margin', one2four(newValue));
+        } else if (attr === 'border') {
+          addPrefix(oldStyle, 'margin', one2three(newValue));
+        } else if (attr === 'background') ; else {
           dom[attr] = newValue;
         }
-      }
-    }
-    // 诸如 padding 转为 t/r/b/l 四个值
-    one2four(str) {
-      const temp = str.split(' ');
-      let top, right, bottom, left;
-      if (temp.length === 1) [top, right = top, bottom = top, left = top] = temp;
-      if (temp.length === 2) [top, right, bottom = top, left = right] = temp;
-      if (temp.length === 3) [top, right, bottom, left = right] = temp;
-      if (temp.length === 4) [top, right, bottom, left] = temp;
-      return { top, right, bottom, left };
-    }
-    // 将 left 改为 paddingLeft 之类的
-    addPrefix(style, pre, data) {
-      if (!pre || !data) throw new Error('缺少相应入参');
-      for (const attr in data) {
-        const newAttr = pre + toFirstUpperCase();
-        style[newAttr] = data[attr];
       }
     }
   }
@@ -1174,29 +1180,28 @@
    * 即 dom 对象
    */
   let domId = 0;
+
   class Sprite {
     constructor(style) {
       this.domId = ++domId;
       this.style = new CSSStyleDeclaration(this);
-
-      this.inited = false;
 
       this.x = 0;
       this.y = 0;
       this.width = 0;
       this.height = 0;
 
-      this.child = [];
+      this.children = [];
       this.parent = void 0;
-      
+
       for (const attr in style) {
         this.style[attr] = style[attr];
       }
     }
     render(ctx) {
       this._drawNode(ctx, this);
-      const { child = [] } = this;
-      child.forEach(el => el._drawNode(ctx, el));
+      const { children = [] } = this;
+      children.forEach(el => el._drawNode(ctx, el));
     }
     _drawNode(raw_ctx, node) {
       const { parent } = node;
@@ -1216,7 +1221,7 @@
     draw(ctx) {
       // 将 padding 转为 paddingLeft 等
       this.style.convert(this);
-      
+
       // 各式公共样式的处理，如背景/边框等
       StyleRender(ctx, this.style, this);
 
@@ -1227,16 +1232,17 @@
     }
     appendChild(el) {
       el.parent = this;
-      this.child.push(el);
+      this.children.push(el);
     }
     removeChild(el) {
-      this.child = this.child.filter(item => item !== el);
+      this.child = this.children.filter(child => child !== el);
     }
   }
 
   /**
    * 块级盒子
    */
+
   class BlockBox extends Sprite {
     constructor(style) {
       super(style);
@@ -1246,6 +1252,7 @@
   /**
    * 内联盒子
    */
+
   class InlineBox extends Sprite {
     constructor(style) {
       super(style);
@@ -1264,13 +1271,9 @@
       const inline = new InlineBox({
         width: 100,
         height: 200,
-        left: 50,
-        backgroundColor: 'red',
+        backgroundColor: 'red'
       });
       this.appendChild(inline);
-      // for (var attr in inline.style) {
-      //   console.log(attr, inline.style[attr])
-      // }
     }
   }
 
@@ -1281,7 +1284,7 @@
   class Main {
     constructor(canvas, ctx, width, height) {
       const MainPage = new Index({ width, height });
-      
+
       (function loop() {
         ctx.clearRect(0, 0, width, height);
         MainPage.render(ctx);
