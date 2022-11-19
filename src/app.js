@@ -1,16 +1,16 @@
 /**
  * 绘制插件初始入口
  */
-import Home from '@/pages/Home/index';
+import Home from '@/pages/Home/index.js'
 
 export default class Main {
-  constructor(canvas, ctx, width, height) {
+  constructor (canvas, ctx, width, height) {
     const MainPage = new Home({ width, height });
 
-    (function loop() {
-      ctx.clearRect(0, 0, width, height);
-      MainPage.render(ctx);
-      requestAnimationFrame(loop);
-    })();
+    (function loop () {
+      ctx.clearRect(0, 0, width, height)
+      MainPage.render(ctx)
+      requestAnimationFrame(loop)
+    })()
   }
 }

@@ -1,3 +1,6 @@
 ## npm 相关
 node_modules
 package-lock.json
+
+## 打包相关
+dist
