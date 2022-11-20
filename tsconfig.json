@@ -1,17 +1,17 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": ".",
+    "outDir": "./dist",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"]
     },
-    "strictNullChecks": false
+    "allowJs": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "example/scripts/**/*"
   ],
   "exclude": [
-    "node_modules",
-    "**/*.spec.ts",
-    "example"
+    "node_modules"
   ]
 }

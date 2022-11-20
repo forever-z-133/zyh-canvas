@@ -1,17 +1,23 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig(({ mode = 'development' }) => {
+  const isDev = mode === 'development'
+  const srcDir = isDev ? '../../src/' : './src/'
+
   return {
+    server: {
+      port: 3000,
+      open: '/example/index.html'
+    },
     build: {
       lib: {
-        // entry: ['example/index.html'],
         entry: 'src/index.ts',
         name: 'zyh-canvas'
       }
     },
     resolve: {
       alias: {
-        '@/': 'src/'
+        '@/': srcDir
       }
     }
   }
