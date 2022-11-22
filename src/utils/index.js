@@ -3,6 +3,8 @@ export const app = {
   data: {}
 }
 
+export const createId = () => Math.random().toString(16).slice(2, 16)
+
 /****************************************
  * canvas 相关功能
  ***************************************/

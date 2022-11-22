@@ -4,6 +4,12 @@
   "description": "",
   "main": "dist/zyh-canvas.umd.js",
   "module": "dist/zyh-canvas.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/zyh-canvas.mjs",
+      "require": "./dist/zyh-canvas.umd.js"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",

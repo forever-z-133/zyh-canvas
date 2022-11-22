@@ -18,7 +18,8 @@ export default defineConfig(({ mode = 'development' }) => {
     resolve: {
       alias: {
         '@/': srcDir
-      }
+      },
+      extensions: ['.mjs', '.js', '.ts', '.json']
     }
   }
 })

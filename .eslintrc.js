@@ -18,6 +18,7 @@ module.exports = {
     'no-unused-vars': 0,
     '@typescript-eslint/no-unused-vars': 1,
     '@typescript-eslint/strict-boolean-expressions': 0,
+    '@typescript-eslint/method-signature-style': 0,
     'no-new': 0
   },
   ignorePatterns: [

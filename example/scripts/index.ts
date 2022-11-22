@@ -1,14 +1,10 @@
-import App from '@/app.js'
 import { app, createCanvas, getContext } from '@/utils/index.js'
+import Stage from '@/Application/Stage'
+import Render from '@/Application/Render'
+import { BlockLayer } from '@/Layer'
 
-import '@/utils/global.js'
-
-/**
- * 页面初始入口
- */
-
-app.data.winW = 750
-app.data.winH = 1334
+app.data.winW = window.innerWidth / 2
+app.data.winH = window.innerHeight
 const winW = app.data.winW
 const winH = app.data.winH
 
@@ -16,4 +12,10 @@ const canvas = createCanvas()
 const ctx = getContext(canvas, winW, winH)
 document.body.append(canvas)
 
-new App(canvas, ctx, winW, winH)
+const stage = new Stage(ctx, { width: winW, height: winH, background: 'red' })
+const render = new Render(stage)
+console.log(stage)
+console.log(render)
+
+const box = new BlockLayer({ width: 50, height: 50, background: 'green' })
+stage.appendChild(box)
