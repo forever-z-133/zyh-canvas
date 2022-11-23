@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 
 export default defineConfig(({ mode = 'development' }) => {
   const isDev = mode === 'development'
-  const srcDir = isDev ? '../../src/' : './src/'
+  const alias = isDev ? { '@/': '../../src/' } : undefined
 
   return {
     server: {
@@ -12,13 +12,12 @@ export default defineConfig(({ mode = 'development' }) => {
     build: {
       lib: {
         entry: 'src/index.ts',
-        name: 'zyh-canvas'
+        name: 'zyh-canvas',
+        fileName: 'zyh-canvas'
       }
     },
     resolve: {
-      alias: {
-        '@/': srcDir
-      },
+      alias, /* build 若开启 alias 会不支持 /a 自动识别为 /a/index.ts */
       extensions: ['.mjs', '.js', '.ts', '.json']
     }
   }

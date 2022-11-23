@@ -1,4 +1,4 @@
-import { BlockLayer } from '@/Layer/index'
+import { BlockLayer } from '../Layer/index'
 import { addCanvasContextProxy } from './CanvasContextProxy'
 
 interface ApplicationOptions {

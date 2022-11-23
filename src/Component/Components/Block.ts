@@ -1,4 +1,4 @@
-import { createId } from '@/utils/index.js'
+import { createId } from '../../utils/index.js'
 import ParentComponent from '../ParentComponent'
 
 class BlockComponent extends ParentComponent {

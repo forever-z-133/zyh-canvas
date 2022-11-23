@@ -2,9 +2,6 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "./dist",
-    "paths": {
-      "@/*": ["src/*"]
-    },
     "allowJs": true
   },
   "include": [

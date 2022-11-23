@@ -1,14 +1,13 @@
 {
   "name": "zyh-canvas",
   "version": "1.0.0",
+  "author": "forever-z-133",
   "description": "",
   "main": "dist/zyh-canvas.umd.js",
   "module": "dist/zyh-canvas.mjs",
   "exports": {
-    ".": {
-      "import": "./dist/zyh-canvas.mjs",
-      "require": "./dist/zyh-canvas.umd.js"
-    }
+    "import": "./dist/zyh-canvas.mjs",
+    "require": "./dist/zyh-canvas.umd.js"
   },
   "scripts": {
     "dev": "vite",
@@ -17,7 +16,6 @@
     "test": "vitest run --coverage",
     "lint": "eslint -c .eslintrc.js --fix"
   },
-  "author": "",
   "license": "ISC",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.0.0",
