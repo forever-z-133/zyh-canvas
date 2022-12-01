@@ -14,7 +14,7 @@
     "build": "vite build",
     "test:dev": "vitest",
     "test": "vitest run --coverage",
-    "lint": "eslint -c .eslintrc.js --fix"
+    "lint": "eslint --fix --ext cjs,mjs,js,ts ./src ./example"
   },
   "license": "ISC",
   "devDependencies": {
