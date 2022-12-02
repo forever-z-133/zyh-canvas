@@ -17,5 +17,5 @@ const render = new Render(stage)
 console.log(stage)
 console.log(render)
 
-const box = new BlockLayer({ width: 50, height: 50, background: 'green' })
+const box = new BlockLayer({ top: 20, left: 50, width: 50, height: 50, background: 'green' })
 stage.appendChild(box)

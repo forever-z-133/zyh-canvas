@@ -31,7 +31,7 @@ class Stage {
   init (): void {
     const { width, height, background } = this.options
 
-    const bodyNode = new BlockLayer({ width, height, background })
+    const bodyNode = new BlockLayer({ top: 0, left: 0, width, height, background })
     this.elements.push(bodyNode)
   }
 
