@@ -1,38 +1,31 @@
+import BaseLayer, { ILayerBaseData } from './BaseLayer'
 
-interface BlockLayerData {
-  top?: number
-  left?: number
-  width?: number
-  height?: number
-  background?: string
+interface IBlockLayerData extends ILayerBaseData {
   backgroundColor?: string
   opacity?: number
-  borderRadius?: number
+  borderRadius?: string
 }
 
-class BlockLayer implements Layer {
-  top = 0
-  left = 0
-  width = 0
-  height = 0
-  background = 'transparent'
+const BlockLayerDefaultData: IBlockLayerData = {
+  top: 0,
+  left: 0,
+  width: 0,
+  height: 0,
+  backgroundColor: 'transparent',
+  opacity: 1,
+  borderRadius: 'none'
+}
 
-  constructor (data: BlockLayerData) {
-    const { top = 0, left = 0, width = 0, height = 0, background = 'transparent' } = data || {}
-
-    this.top = top
-    this.left = left
-    this.width = width
-    this.height = height
-    this.background = background
-  }
+class BlockLayer extends BaseLayer<IBlockLayerData> {
+  defaultData = BlockLayerDefaultData
+  data = BlockLayerDefaultData
 
   render (ctx: CanvasContext): void {
-    const { top, left, width, height, background } = this
+    const { top, left, width, height, backgroundColor } = this.data
 
     if (!width || !height) return
 
-    ctx.setFillStyle(background)
+    ctx.setFillStyle(backgroundColor)
     ctx.fillRect(top, left, width, height)
   }
 }
